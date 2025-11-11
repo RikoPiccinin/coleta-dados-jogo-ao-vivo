@@ -225,8 +225,17 @@ def gerar_imagens(n, time_a, time_b):
 # ==========================
 # EXECUÇÃO AUTOMÁTICA
 # ==========================
+#if __name__ == "__main__":
+ #   def abrir():
+  #      webbrowser.open_new("http://127.0.0.1:8050/")
+   # threading.Timer(1, abrir).start()
+    #app.run(debug=True)-->
+
+# ==========================
+# EXECUÇÃO AUTOMÁTICA (ajustada para Render)
+# ==========================
+import os
+
 if __name__ == "__main__":
-    def abrir():
-        webbrowser.open_new("http://127.0.0.1:8050/")
-    threading.Timer(1, abrir).start()
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8050))  # Render define a porta via variável de ambiente
+    app.run(host="0.0.0.0", port=port, debug=False)
