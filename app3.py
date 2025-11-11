@@ -4,6 +4,7 @@ import pandas as pd
 import io, base64
 from PIL import Image, ImageDraw, ImageFont
 import webbrowser, threading
+import os
 
 # Inicializa o app com meta viewport
 app = dash.Dash(
@@ -234,8 +235,9 @@ def gerar_imagens(n, time_a, time_b):
 # ==========================
 # EXECUÇÃO AUTOMÁTICA (ajustada para Render)
 # ==========================
-import os
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))  # Render define a porta via variável de ambiente
     app.run(host="0.0.0.0", port=port, debug=False)
+
