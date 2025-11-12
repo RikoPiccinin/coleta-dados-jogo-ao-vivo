@@ -233,7 +233,7 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
         val_b = int(dados_b.loc[dados_b["Estatística"] == est, "Quantidade"].values[0])
         estatisticas.append((est, val_a, val_b))
 
-    largura, altura = 800, 400
+    largura, altura = 1000, 500  # Imagem mais nítida e adaptável a telas grandes
     cor_fundo = (10, 15, 20)
     cor_texto = (255, 255, 255)
     img = Image.new("RGB", (largura, altura), color=cor_fundo)
@@ -316,5 +316,6 @@ def gerar_imagens(n, time_a, time_b):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))  # Render define a porta via variável de ambiente
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
