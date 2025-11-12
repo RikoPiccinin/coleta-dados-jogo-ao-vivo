@@ -1,12 +1,13 @@
-import dash
-from dash import html, dcc, Input, Output, State, ctx
+from dash import Dash, html, dcc, Input, Output, State, ctx
 import pandas as pd
 import io, base64
 from PIL import Image, ImageDraw, ImageFont
 import os
 
-# Inicializa o app com meta viewport (responsivo)
-app = dash.Dash(
+# ==========================
+# CONFIGURAÇÃO DO APP
+# ==========================
+app = Dash(
     __name__,
     suppress_callback_exceptions=True,
     index_string='''
@@ -18,7 +19,7 @@ app = dash.Dash(
             <title>Estatísticas do Jogo</title>
             {%css%}
         </head>
-        <body>
+        <body style="margin:0; padding:0; overflow-x:hidden;">
             {%app_entry%}
             <footer>
                 {%config%}
@@ -31,15 +32,18 @@ app = dash.Dash(
 )
 server = app.server
 
-# Estatísticas
+# ==========================
+# DADOS INICIAIS
+# ==========================
 grupo1 = ["Gols", "Finalizações", "Chutes no Gol", "Escanteios"]
 grupo2 = ["Faltas", "Cartões", "Impedimentos"]
 
-# DataFrames iniciais
 dados_time_a = pd.DataFrame({"Estatística": grupo1 + grupo2, "Quantidade": [0]*len(grupo1 + grupo2)})
 dados_time_b = pd.DataFrame({"Estatística": grupo1 + grupo2, "Quantidade": [0]*len(grupo1 + grupo2)})
 
-# Layout principal
+# ==========================
+# LAYOUT
+# ==========================
 app.layout = html.Div(
     style={"padding": "10px", "maxWidth": "100vw", "overflowX": "hidden"},
     children=[
@@ -150,7 +154,7 @@ app.layout = html.Div(
 )
 
 # ==========================
-# Atualização de estatísticas
+# CALLBACK ATUALIZAÇÃO TABELA
 # ==========================
 @app.callback(
     Output("tabelas", "children"),
@@ -187,7 +191,7 @@ def atualizar_dados(*args):
     return [tabela]
 
 # ==========================
-# Geração de Imagem (ajustada)
+# FUNÇÃO GERAR IMAGEM
 # ==========================
 def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
     estatisticas = []
@@ -196,15 +200,15 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
         val_b = int(dados_b.loc[dados_b["Estatística"] == est, "Quantidade"].values[0])
         estatisticas.append((est, val_a, val_b))
 
-    largura, altura = 1600, 900  # 📸 imagem bem maior e mais nítida
+    largura, altura = 2000, 1100  # 🔥 imagem maior e legível
     cor_fundo = (10, 15, 20)
     cor_texto = (255, 255, 255)
     img = Image.new("RGB", (largura, altura), color=cor_fundo)
     draw = ImageDraw.Draw(img)
 
     try:
-        fonte_titulo = ImageFont.truetype("arialbd.ttf", 70)
-        fonte_texto = ImageFont.truetype("arial.ttf", 48)
+        fonte_titulo = ImageFont.truetype("arialbd.ttf", 100)
+        fonte_texto = ImageFont.truetype("arial.ttf", 60)
     except:
         fonte_titulo = ImageFont.load_default()
         fonte_texto = ImageFont.load_default()
@@ -217,18 +221,18 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
     w_titulo = bbox_titulo[2] - bbox_titulo[0]
     draw.text(((largura - w_titulo) // 2, 60), titulo, fill=cor_texto, font=fonte_titulo)
 
-    # Cabeçalho
-    x_coluna = [500, 800, 1100]
-    cabecalho = [time_a, "Estatísticas", time_b]
-    y_inicio = 200
-    espacamento = 80
+    # Cabeçalhos centralizados
+    x_coluna = [600, 1000, 1400]
+    cabecalho = [time_a, "ESTATÍSTICAS", time_b]
+    y_inicio = 250
+    espacamento = 110
 
     for i, texto in enumerate(cabecalho):
         bbox = draw.textbbox((0, 0), texto, font=fonte_texto)
         w = bbox[2] - bbox[0]
         draw.text((x_coluna[i] - w // 2, y_inicio), texto, fill=cor_texto, font=fonte_texto)
 
-    y = y_inicio + 100
+    y = y_inicio + 130
     for est, val_a, val_b in estatisticas:
         draw.text((x_coluna[0], y), str(val_a), fill=cor_texto, font=fonte_texto, anchor="mm")
         draw.text((x_coluna[1], y), est, fill=cor_texto, font=fonte_texto, anchor="mm")
@@ -240,7 +244,9 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
     buf.seek(0)
     return "data:image/png;base64," + base64.b64encode(buf.read()).decode()
 
-# Callback imagem
+# ==========================
+# CALLBACK GERAR IMAGEM
+# ==========================
 @app.callback(
     [Output("img-grupo1", "src"), Output("img-grupo2", "src")],
     Input("btn-imagem", "n_clicks"),
@@ -254,10 +260,13 @@ def gerar_imagens(n, time_a, time_b):
     img2 = gerar_imagem_tabela(time_a, time_b, dados_time_a, dados_time_b, grupo2)
     return img1, img2
 
-# Execução (Render)
+# ==========================
+# EXECUÇÃO NO RENDER
+# ==========================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
