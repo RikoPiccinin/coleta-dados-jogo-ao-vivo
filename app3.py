@@ -200,7 +200,7 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
         val_b = int(dados_b.loc[dados_b["Estatística"] == est, "Quantidade"].values[0])
         estatisticas.append((est, val_a, val_b))
 
-    largura, altura = 2000, 1100  # 🔥 imagem maior e legível
+    largura, altura = 800, 400  
     cor_fundo = (10, 15, 20)
     cor_texto = (255, 255, 255)
     img = Image.new("RGB", (largura, altura), color=cor_fundo)
@@ -222,10 +222,10 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
     draw.text(((largura - w_titulo) // 2, 60), titulo, fill=cor_texto, font=fonte_titulo)
 
     # Cabeçalhos centralizados
-    x_coluna = [600, 1000, 1400]
+    x_coluna = [250, 400, 550]
     cabecalho = [time_a, "ESTATÍSTICAS", time_b]
-    y_inicio = 250
-    espacamento = 110
+    y_inicio = 120
+    espacamento = 45
 
     for i, texto in enumerate(cabecalho):
         bbox = draw.textbbox((0, 0), texto, font=fonte_texto)
@@ -266,6 +266,7 @@ def gerar_imagens(n, time_a, time_b):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
