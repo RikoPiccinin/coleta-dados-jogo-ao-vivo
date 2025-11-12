@@ -45,19 +45,25 @@ dados_time_b = pd.DataFrame({"Estatística": grupo1 + grupo2, "Quantidade": [0]*
 # ==========================
 app.layout = html.Div(
     className="container",
+    style={
+        "padding": "10px",
+        "maxWidth": "100vw",
+        "overflowX": "hidden",
+    },
     children=[
 
-        html.H1("📊 Estatísticas do Jogo"),
+        html.H1("📊 Estatísticas do Jogo", style={"textAlign": "center"}),
 
         # Times
         html.Div(
             className="row",
+            style={"display": "flex", "flexWrap": "wrap", "gap": "10px", "justifyContent": "center"},
             children=[
-                html.Div(className="col", children=[
+                html.Div(className="col", style={"flex": "1", "minWidth": "250px"}, children=[
                     html.Label("Time A (Esquerda):"),
                     dcc.Input(id="input-time-a", type="text", placeholder="Time A", value=" ")
                 ]),
-                html.Div(className="col", children=[
+                html.Div(className="col", style={"flex": "1", "minWidth": "250px"}, children=[
                     html.Label("Time B (Direita):"),
                     dcc.Input(id="input-time-b", type="text", placeholder="Time B", value=" ")
                 ]),
@@ -67,42 +73,112 @@ app.layout = html.Div(
         # Botões das estatísticas
         html.Div(
             className="row",
+            style={"display": "flex", "flexWrap": "wrap", "gap": "20px", "justifyContent": "center"},
             children=[
-                html.Div(className="col", children=[
-                    html.H3("⚽ Time A"),
-                    *[html.Button(est, id=f"a-{est}", n_clicks=0,
-                                  className="dash-button",
-                                  style={"background": "#007bff", "color": "white"}) for est in grupo1 + grupo2]
+                html.Div(className="col", style={"flex": "1", "minWidth": "280px"}, children=[
+                    html.H3("⚽ Time A", style={"textAlign": "center"}),
+                    *[html.Button(
+                        est,
+                        id=f"a-{est}",
+                        n_clicks=0,
+                        className="dash-button",
+                        style={
+                            "background": "#007bff",
+                            "color": "white",
+                            "margin": "5px",
+                            "padding": "10px",
+                            "borderRadius": "8px",
+                            "width": "100%"
+                        }
+                    ) for est in grupo1 + grupo2]
                 ]),
-                html.Div(className="col", children=[
-                    html.H3("🏆 Time B"),
-                    *[html.Button(est, id=f"b-{est}", n_clicks=0,
-                                  className="dash-button",
-                                  style={"background": "#dc3545", "color": "white"}) for est in grupo1 + grupo2]
+                html.Div(className="col", style={"flex": "1", "minWidth": "280px"}, children=[
+                    html.H3("🏆 Time B", style={"textAlign": "center"}),
+                    *[html.Button(
+                        est,
+                        id=f"b-{est}",
+                        n_clicks=0,
+                        className="dash-button",
+                        style={
+                            "background": "#dc3545",
+                            "color": "white",
+                            "margin": "5px",
+                            "padding": "10px",
+                            "borderRadius": "8px",
+                            "width": "100%"
+                        }
+                    ) for est in grupo1 + grupo2]
                 ]),
             ]
         ),
 
-        html.H2("📈 Estatísticas Atuais", style={"marginTop": "30px"}),
-
-        html.Div(id="tabelas", style={"display": "flex", "justifyContent": "center", "gap": "20px", "flexWrap": "wrap"}),
+        html.H2("📈 Estatísticas Atuais", style={"marginTop": "30px", "textAlign": "center"}),
 
         html.Div(
-            html.Button("📸 Gerar Imagens", id="btn-imagem", n_clicks=0,
-                        style={"margin": "20px", "background": "green", "color": "white", "padding": "10px 20px"}),
+            id="tabelas",
+            style={
+                "display": "flex",
+                "justifyContent": "center",
+                "gap": "20px",
+                "flexWrap": "wrap",
+                "width": "100%"
+            }
+        ),
+
+        html.Div(
+            html.Button(
+                "📸 Gerar Imagens",
+                id="btn-imagem",
+                n_clicks=0,
+                style={
+                    "margin": "20px auto",
+                    "background": "green",
+                    "color": "white",
+                    "padding": "10px 20px",
+                    "borderRadius": "8px",
+                    "display": "block"
+                }
+            ),
             style={"textAlign": "center"}
         ),
 
         html.Div(
             className="row",
+            style={
+                "display": "flex",
+                "flexWrap": "wrap",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "gap": "20px"
+            },
             children=[
-                html.Div(className="col", children=[
-                    html.H3("Imagem Grupo 1"),
-                    html.Img(id="img-grupo1", style={"width": "100%", "maxWidth": "600px"})
+                html.Div(className="col", style={"flex": "1", "minWidth": "300px"}, children=[
+                    html.H3("Imagem Grupo 1", style={"textAlign": "center"}),
+                    html.Img(
+                        id="img-grupo1",
+                        style={
+                            "width": "100%",
+                            "maxWidth": "100%",
+                            "height": "auto",
+                            "display": "block",
+                            "margin": "0 auto",
+                            "borderRadius": "10px"
+                        }
+                    )
                 ]),
-                html.Div(className="col", children=[
-                    html.H3("Imagem Grupo 2"),
-                    html.Img(id="img-grupo2", style={"width": "100%", "maxWidth": "600px"})
+                html.Div(className="col", style={"flex": "1", "minWidth": "300px"}, children=[
+                    html.H3("Imagem Grupo 2", style={"textAlign": "center"}),
+                    html.Img(
+                        id="img-grupo2",
+                        style={
+                            "width": "100%",
+                            "maxWidth": "100%",
+                            "height": "auto",
+                            "display": "block",
+                            "margin": "0 auto",
+                            "borderRadius": "10px"
+                        }
+                    )
                 ])
             ]
         )
@@ -240,4 +316,5 @@ def gerar_imagens(n, time_a, time_b):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))  # Render define a porta via variável de ambiente
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
