@@ -3,10 +3,9 @@ from dash import html, dcc, Input, Output, State, ctx
 import pandas as pd
 import io, base64
 from PIL import Image, ImageDraw, ImageFont
-import webbrowser, threading
 import os
 
-# Inicializa o app com meta viewport
+# Inicializa o app com meta viewport (responsivo)
 app = dash.Dash(
     __name__,
     suppress_callback_exceptions=True,
@@ -32,7 +31,7 @@ app = dash.Dash(
 )
 server = app.server
 
-# Estatísticas divididas em grupos
+# Estatísticas
 grupo1 = ["Gols", "Finalizações", "Chutes no Gol", "Escanteios"]
 grupo2 = ["Faltas", "Cartões", "Impedimentos"]
 
@@ -40,48 +39,37 @@ grupo2 = ["Faltas", "Cartões", "Impedimentos"]
 dados_time_a = pd.DataFrame({"Estatística": grupo1 + grupo2, "Quantidade": [0]*len(grupo1 + grupo2)})
 dados_time_b = pd.DataFrame({"Estatística": grupo1 + grupo2, "Quantidade": [0]*len(grupo1 + grupo2)})
 
-# ==========================
-# LAYOUT RESPONSIVO
-# ==========================
+# Layout principal
 app.layout = html.Div(
-    className="container",
-    style={
-        "padding": "10px",
-        "maxWidth": "100vw",
-        "overflowX": "hidden",
-    },
+    style={"padding": "10px", "maxWidth": "100vw", "overflowX": "hidden"},
     children=[
-
         html.H1("📊 Estatísticas do Jogo", style={"textAlign": "center"}),
 
         # Times
         html.Div(
-            className="row",
             style={"display": "flex", "flexWrap": "wrap", "gap": "10px", "justifyContent": "center"},
             children=[
-                html.Div(className="col", style={"flex": "1", "minWidth": "250px"}, children=[
+                html.Div(style={"flex": "1", "minWidth": "250px"}, children=[
                     html.Label("Time A (Esquerda):"),
                     dcc.Input(id="input-time-a", type="text", placeholder="Time A", value=" ")
                 ]),
-                html.Div(className="col", style={"flex": "1", "minWidth": "250px"}, children=[
+                html.Div(style={"flex": "1", "minWidth": "250px"}, children=[
                     html.Label("Time B (Direita):"),
                     dcc.Input(id="input-time-b", type="text", placeholder="Time B", value=" ")
                 ]),
             ],
         ),
 
-        # Botões das estatísticas
+        # Botões
         html.Div(
-            className="row",
             style={"display": "flex", "flexWrap": "wrap", "gap": "20px", "justifyContent": "center"},
             children=[
-                html.Div(className="col", style={"flex": "1", "minWidth": "280px"}, children=[
+                html.Div(style={"flex": "1", "minWidth": "280px"}, children=[
                     html.H3("⚽ Time A", style={"textAlign": "center"}),
                     *[html.Button(
                         est,
                         id=f"a-{est}",
                         n_clicks=0,
-                        className="dash-button",
                         style={
                             "background": "#007bff",
                             "color": "white",
@@ -92,13 +80,12 @@ app.layout = html.Div(
                         }
                     ) for est in grupo1 + grupo2]
                 ]),
-                html.Div(className="col", style={"flex": "1", "minWidth": "280px"}, children=[
+                html.Div(style={"flex": "1", "minWidth": "280px"}, children=[
                     html.H3("🏆 Time B", style={"textAlign": "center"}),
                     *[html.Button(
                         est,
                         id=f"b-{est}",
                         n_clicks=0,
-                        className="dash-button",
                         style={
                             "background": "#dc3545",
                             "color": "white",
@@ -114,16 +101,7 @@ app.layout = html.Div(
 
         html.H2("📈 Estatísticas Atuais", style={"marginTop": "30px", "textAlign": "center"}),
 
-        html.Div(
-            id="tabelas",
-            style={
-                "display": "flex",
-                "justifyContent": "center",
-                "gap": "20px",
-                "flexWrap": "wrap",
-                "width": "100%"
-            }
-        ),
+        html.Div(id="tabelas", style={"display": "flex", "justifyContent": "center", "gap": "20px", "flexWrap": "wrap"}),
 
         html.Div(
             html.Button(
@@ -142,8 +120,8 @@ app.layout = html.Div(
             style={"textAlign": "center"}
         ),
 
+        # Imagens
         html.Div(
-            className="row",
             style={
                 "display": "flex",
                 "flexWrap": "wrap",
@@ -152,33 +130,19 @@ app.layout = html.Div(
                 "gap": "20px"
             },
             children=[
-                html.Div(className="col", style={"flex": "1", "minWidth": "300px"}, children=[
+                html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
                     html.H3("Imagem Grupo 1", style={"textAlign": "center"}),
-                    html.Img(
-                        id="img-grupo1",
-                        style={
-                            "width": "100%",
-                            "maxWidth": "100%",
-                            "height": "auto",
-                            "display": "block",
-                            "margin": "0 auto",
-                            "borderRadius": "10px"
-                        }
-                    )
+                    html.Img(id="img-grupo1", style={
+                        "width": "100%", "maxWidth": "100%", "height": "auto",
+                        "display": "block", "margin": "0 auto", "borderRadius": "10px"
+                    })
                 ]),
-                html.Div(className="col", style={"flex": "1", "minWidth": "300px"}, children=[
+                html.Div(style={"flex": "1", "minWidth": "300px"}, children=[
                     html.H3("Imagem Grupo 2", style={"textAlign": "center"}),
-                    html.Img(
-                        id="img-grupo2",
-                        style={
-                            "width": "100%",
-                            "maxWidth": "100%",
-                            "height": "auto",
-                            "display": "block",
-                            "margin": "0 auto",
-                            "borderRadius": "10px"
-                        }
-                    )
+                    html.Img(id="img-grupo2", style={
+                        "width": "100%", "maxWidth": "100%", "height": "auto",
+                        "display": "block", "margin": "0 auto", "borderRadius": "10px"
+                    })
                 ])
             ]
         )
@@ -186,7 +150,7 @@ app.layout = html.Div(
 )
 
 # ==========================
-# CALLBACK DE ATUALIZAÇÃO
+# Atualização de estatísticas
 # ==========================
 @app.callback(
     Output("tabelas", "children"),
@@ -222,9 +186,8 @@ def atualizar_dados(*args):
 
     return [tabela]
 
-
 # ==========================
-# GERAÇÃO DE IMAGEM
+# Geração de Imagem (ajustada)
 # ==========================
 def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
     estatisticas = []
@@ -233,15 +196,15 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
         val_b = int(dados_b.loc[dados_b["Estatística"] == est, "Quantidade"].values[0])
         estatisticas.append((est, val_a, val_b))
 
-    largura, altura = 1000, 500  # Imagem mais nítida e adaptável a telas grandes
+    largura, altura = 1600, 900  # 📸 imagem bem maior e mais nítida
     cor_fundo = (10, 15, 20)
     cor_texto = (255, 255, 255)
     img = Image.new("RGB", (largura, altura), color=cor_fundo)
     draw = ImageDraw.Draw(img)
 
     try:
-        fonte_titulo = ImageFont.truetype("arialbd.ttf", 38)
-        fonte_texto = ImageFont.truetype("arial.ttf", 26)
+        fonte_titulo = ImageFont.truetype("arialbd.ttf", 70)
+        fonte_texto = ImageFont.truetype("arial.ttf", 48)
     except:
         fonte_titulo = ImageFont.load_default()
         fonte_texto = ImageFont.load_default()
@@ -252,24 +215,21 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
 
     bbox_titulo = draw.textbbox((0, 0), titulo, font=fonte_titulo)
     w_titulo = bbox_titulo[2] - bbox_titulo[0]
-    draw.text(((largura - w_titulo) // 2, 40), titulo, fill=cor_texto, font=fonte_titulo)
+    draw.text(((largura - w_titulo) // 2, 60), titulo, fill=cor_texto, font=fonte_titulo)
 
-    # Agora as colunas são: Time A | Estatísticas | Time B
-    x_coluna = [250, 400, 550]
-
-    # Cabeçalho (ajustado para colocar ESTATÍSTICAS no meio)
+    # Cabeçalho
+    x_coluna = [500, 800, 1100]
     cabecalho = [time_a, "Estatísticas", time_b]
-    y_inicio = 120
-    espacamento = 45
+    y_inicio = 200
+    espacamento = 80
 
     for i, texto in enumerate(cabecalho):
         bbox = draw.textbbox((0, 0), texto, font=fonte_texto)
         w = bbox[2] - bbox[0]
         draw.text((x_coluna[i] - w // 2, y_inicio), texto, fill=cor_texto, font=fonte_texto)
 
-    y = y_inicio + 50
+    y = y_inicio + 100
     for est, val_a, val_b in estatisticas:
-        # Agora imprime: valor do time A | nome da estatística | valor do time B
         draw.text((x_coluna[0], y), str(val_a), fill=cor_texto, font=fonte_texto, anchor="mm")
         draw.text((x_coluna[1], y), est, fill=cor_texto, font=fonte_texto, anchor="mm")
         draw.text((x_coluna[2], y), str(val_b), fill=cor_texto, font=fonte_texto, anchor="mm")
@@ -280,11 +240,7 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
     buf.seek(0)
     return "data:image/png;base64," + base64.b64encode(buf.read()).decode()
 
-
-
-# ==========================
-# CALLBACK DE IMAGEM
-# ==========================
+# Callback imagem
 @app.callback(
     [Output("img-grupo1", "src"), Output("img-grupo2", "src")],
     Input("btn-imagem", "n_clicks"),
@@ -298,24 +254,11 @@ def gerar_imagens(n, time_a, time_b):
     img2 = gerar_imagem_tabela(time_a, time_b, dados_time_a, dados_time_b, grupo2)
     return img1, img2
 
-
-# ==========================
-# EXECUÇÃO AUTOMÁTICA
-# ==========================
-#if __name__ == "__main__":
- #   def abrir():
-  #      webbrowser.open_new("http://127.0.0.1:8050/")
-   # threading.Timer(1, abrir).start()
-    #app.run(debug=True)-->
-
-# ==========================
-# EXECUÇÃO AUTOMÁTICA (ajustada para Render)
-# ==========================
-
-
+# Execução (Render)
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))  # Render define a porta via variável de ambiente
+    port = int(os.environ.get("PORT", 8050))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
