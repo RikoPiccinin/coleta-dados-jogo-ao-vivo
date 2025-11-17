@@ -254,18 +254,36 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
 # ==========================
 # CALLBACK GERAR IMAGEM
 # ==========================
+# @app.callback(
+  #  [Output("img-grupo1", "src"), Output("img-grupo2", "src")],
+   # Input("btn-imagem", "n_clicks"),
+    # State("input-time-a", "value"),
+    # State("input-time-b", "value")
+#)
+# def gerar_imagens(n, time_a, time_b):
+  #  if n == 0:
+   #     return dash.no_update, dash.no_update
+    # img1 = gerar_imagem_tabela(time_a, time_b, dados_time_a, dados_time_b, grupo1)
+    # img2 = gerar_imagem_tabela(time_a, time_b, dados_time_a, dados_time_b, grupo2)
+    # return img1, img2
+
+
+
 @app.callback(
-    [Output("img-grupo1", "src"), Output("img-grupo2", "src")],
-    Input("btn-imagem", "n_clicks"),
-    State("input-time-a", "value"),
-    State("input-time-b", "value")
+    Output("download-images", "data"),
+    Input("btn-download", "n_clicks"),
+    prevent_initial_call=True
 )
-def gerar_imagens(n, time_a, time_b):
-    if n == 0:
-        return dash.no_update, dash.no_update
-    img1 = gerar_imagem_tabela(time_a, time_b, dados_time_a, dados_time_b, grupo1)
-    img2 = gerar_imagem_tabela(time_a, time_b, dados_time_a, dados_time_b, grupo2)
-    return img1, img2
+def baixar(n):
+    # gerar .zip e devolver
+    return dcc.send_file("imagens.zip")
+
+
+
+
+
+
+
 
 # ==========================
 # EXECUÇÃO NO RENDER
@@ -273,6 +291,7 @@ def gerar_imagens(n, time_a, time_b):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
