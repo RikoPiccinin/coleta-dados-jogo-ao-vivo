@@ -2,5 +2,5 @@ dash==2.18.1
 pandas==2.2.3
 Pillow==10.4.0
 gunicorn==23.0.0
-server = app.server
+
 
