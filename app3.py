@@ -200,47 +200,52 @@ def gerar_imagem_tabela(time_a, time_b, dados_a, dados_b, grupo):
         val_b = int(dados_b.loc[dados_b["Estatística"] == est, "Quantidade"].values[0])
         estatisticas.append((est, val_a, val_b))
 
-    largura, altura = 1000, 600  
+    # 🔥 IMAGEM MUITO MAIOR — 2K (pode aumentar para 4K se quiser)
+    largura, altura = 2200, 1400  
     cor_fundo = (10, 15, 20)
     cor_texto = (255, 255, 255)
     img = Image.new("RGB", (largura, altura), color=cor_fundo)
     draw = ImageDraw.Draw(img)
 
+    # 🔥 FONTES MAIORES (proporcionais ao tamanho novo)
     try:
-        fonte_titulo = ImageFont.truetype("arialbd.ttf", 100)
-        fonte_texto = ImageFont.truetype("arial.ttf", 60)
+        fonte_titulo = ImageFont.truetype("arialbd.ttf", 180)
+        fonte_texto  = ImageFont.truetype("arial.ttf", 90)
     except:
         fonte_titulo = ImageFont.load_default()
         fonte_texto = ImageFont.load_default()
 
+    # Cabeçalho título
     gols_a = int(dados_a.loc[dados_a["Estatística"] == "Gols", "Quantidade"].values[0])
     gols_b = int(dados_b.loc[dados_b["Estatística"] == "Gols", "Quantidade"].values[0])
     titulo = f"{time_a} [{gols_a}]  x  [{gols_b}] {time_b}"
 
     bbox_titulo = draw.textbbox((0, 0), titulo, font=fonte_titulo)
     w_titulo = bbox_titulo[2] - bbox_titulo[0]
-    draw.text(((largura - w_titulo) // 2, 60), titulo, fill=cor_texto, font=fonte_titulo)
+    draw.text(((largura - w_titulo) // 2, 80), titulo, fill=cor_texto, font=fonte_titulo)
 
-    # Cabeçalhos centralizados
-    x_coluna = [250, 400, 550]
+    # Colunas
+    x_coluna = [600, 1100, 1600]
     cabecalho = [time_a, "ESTATÍSTICAS", time_b]
-    y_inicio = 120
-    espacamento = 45
+    y_inicio = 300
+    espacamento = 90
 
     for i, texto in enumerate(cabecalho):
         bbox = draw.textbbox((0, 0), texto, font=fonte_texto)
         w = bbox[2] - bbox[0]
         draw.text((x_coluna[i] - w // 2, y_inicio), texto, fill=cor_texto, font=fonte_texto)
 
-    y = y_inicio + 130
+    # Linhas
+    y = y_inicio + 200
     for est, val_a, val_b in estatisticas:
         draw.text((x_coluna[0], y), str(val_a), fill=cor_texto, font=fonte_texto, anchor="mm")
         draw.text((x_coluna[1], y), est, fill=cor_texto, font=fonte_texto, anchor="mm")
         draw.text((x_coluna[2], y), str(val_b), fill=cor_texto, font=fonte_texto, anchor="mm")
         y += espacamento
 
+    # Buffer para o Dash
     buf = io.BytesIO()
-    img.save(buf, format="PNG")
+    img.save(buf, format="PNG", optimize=True)
     buf.seek(0)
     return "data:image/png;base64," + base64.b64encode(buf.read()).decode()
 
@@ -266,6 +271,7 @@ def gerar_imagens(n, time_a, time_b):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
